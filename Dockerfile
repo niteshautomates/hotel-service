@@ -11,13 +11,15 @@ COPY src ./src
 RUN mvn clean package -Dmaven.test.skip=true
 
 
-FROM maven:3.8.3-openjdk-17 AS runtime
+# New Stage
+
+FROM  maven:3.9.9-eclipse-temurin-21-alpine AS runtime
 
 WORKDIR /app
 
-COPY --from=base app/target/HotelService-0.0.1-SNAPSHOT.jar target/HotelService-0.0.1-SNAPSHOT.jar
+COPY --from=base app/target/HotelService-0.0.1-SNAPSHOT.jar ./HotelService-0.0.1-SNAPSHOT.jar
 # Expose the port that the hotel service will run on
 EXPOSE 8082
 
 # Run the hotel service
-CMD ["java", "-jar", "target/HotelService-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "HotelService-0.0.1-SNAPSHOT.jar"]
