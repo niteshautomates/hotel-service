@@ -61,5 +61,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ] # Single Pod access for a primary database
       resources:
         requests:
-          storage: 10Gi # Request a suitable storage size
-      # storageClassName: your-storage-class # Uncomment if you have a specific StorageClass
+          storage: 5Gi # Request a suitable storage size
+  storageClassName: ebs-sc # Uncomment if you have a specific StorageClass
