@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: hotel-pvc
+  name: postgresql-pvc
 spec:
   storageClassName: ebs-sc  
   accessModes:
