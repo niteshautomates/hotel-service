@@ -3,6 +3,7 @@ kind: StatefulSet # Changed from Deployment
 metadata:
   name: postgresql
 spec:
+  terminationGracePeriodSeconds: 10
   serviceName: "postgresql" # Mandatory for StatefulSets: headless service name
   replicas: 1 # Typically 1 for a single PostgreSQL instance
   selector:
@@ -52,10 +53,11 @@ spec:
       initContainers:
       - name: fix-permissions
         image: busybox:latest
-        command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod -R 700 /var/lib/postgresql/data"]
+        command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data/pgdata && chmod -R 700 /var/lib/postgresql/data/pgdata"]
         volumeMounts:
         - name: postgresql-data
           mountPath: /var/lib/postgresql/data
+          subPath: pgdata
   volumeClaimTemplates: # Replaces the 'volumes' section for dynamic PVCs
   - metadata:
       name: postgresql-data # Must match the volumeMounts.name
