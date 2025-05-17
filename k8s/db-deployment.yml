@@ -47,13 +47,13 @@ spec:
           mountPath: /var/lib/postgresql/data
           subPath: pgdata # RECOMMENDED: Mount a subdirectory to avoid lost+found issues
       # Optional: initContainer for setting permissions if your storage doesn't handle it well
-        initContainers:
-        - name: fix-permissions
-          image: busybox:latest
-          command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod -R 700 /var/lib/postgresql/data"]
-          volumeMounts:
-          - name: postgresql-data
-            mountPath: /var/lib/postgresql/data
+      initContainers:
+      - name: fix-permissions
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod -R 700 /var/lib/postgresql/data"]
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
   volumeClaimTemplates: # Replaces the 'volumes' section for dynamic PVCs
   - metadata:
       name: postgresql-data # Must match the volumeMounts.name
