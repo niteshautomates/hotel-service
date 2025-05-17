@@ -3,7 +3,6 @@ kind: StatefulSet # Changed from Deployment
 metadata:
   name: postgresql
 spec:
-  terminationGracePeriodSeconds: 10
   serviceName: "postgresql" # Mandatory for StatefulSets: headless service name
   replicas: 1 # Typically 1 for a single PostgreSQL instance
   selector:
@@ -14,6 +13,7 @@ spec:
       labels:
         app: postgresql
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
       - image: postgres:14
         name: postgresql
