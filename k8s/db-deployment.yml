@@ -39,6 +39,8 @@ spec:
             configMapKeyRef:
               name: pg-configmap
               key: POSTGRES_DB
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata      
         ports:
         - containerPort: 5432
           name: postgresql
