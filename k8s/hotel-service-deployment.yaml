@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  hotspec
+spec:
+  selector:
+    matchLabels:
+      app: hotel-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hotel-service
+    spec:
+      containers:
+      - image: nitesh2611/hotel-svc:2
+        name: hotel-service
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8082
+          name: http
+        env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: pg-configmap
+              key: POSTGRES_HOST
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pg-configmap
+              key: POSTGRES_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-secret
+              key: POSTGRES_PASSWORD
+ 
