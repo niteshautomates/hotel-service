@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet # Changed from Deployment
 metadata:
   name: postgresql
 spec:
+  serviceName: "postgresql" # Mandatory for StatefulSets: headless service name
+  replicas: 1 # Typically 1 for a single PostgreSQL instance
   selector:
     matchLabels:
-      app: postgresql 
-  strategy:
-    type: Recreate
+      app: postgresql
   template:
     metadata:
       labels:
@@ -21,7 +21,7 @@ spec:
             memory: "256Mi"
             cpu: "250m"
           limits:
-            memory: "512Gi"
+            memory: "512Mi" # Corrected: "512Gi" is likely a typo for "512Mi" or much too large
             cpu: "500m"
         env:
         - name: POSTGRES_USER
@@ -43,9 +43,23 @@ spec:
         - containerPort: 5432
           name: postgresql
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data
-          name: postgresql-data
-      volumes:
-      - name: postgresql-data
-        persistentVolumeClaim:
-          claimName: postgresql-pvc  
+        - name: postgresql-data # This references the volumeClaimTemplates below
+          mountPath: /var/lib/postgresql/data
+          subPath: pgdata # RECOMMENDED: Mount a subdirectory to avoid lost+found issues
+      # Optional: initContainer for setting permissions if your storage doesn't handle it well
+      # initContainers:
+      # - name: fix-permissions
+      #   image: busybox:latest
+      #   command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod -R 700 /var/lib/postgresql/data"]
+      #   volumeMounts:
+      #   - name: postgresql-data
+      #     mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates: # Replaces the 'volumes' section for dynamic PVCs
+  - metadata:
+      name: postgresql-data # Must match the volumeMounts.name
+    spec:
+      accessModes: [ "ReadWriteOnce" ] # Single Pod access for a primary database
+      resources:
+        requests:
+          storage: 10Gi # Request a suitable storage size
+      # storageClassName: your-storage-class # Uncomment if you have a specific StorageClass
